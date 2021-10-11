@@ -1,7 +1,7 @@
 baseURL: http://example.org/
 languageCode: en-us
-title: Forty
-theme: forty
+title: Pinar
+theme: Pinar
 googleAnalytics: ''
 disqusShortname: ''
 params:
@@ -10,18 +10,18 @@ params:
     subtitle: |-
       A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP
       AND RELEASED UNDER THE CREATIVE COMMONS.
-    title: Hi, my name is Forty
+    title: Hi, my name is Pinar
   blog: {}
   contact:
     address:
-      - city: City, ST 00000
-        country: Country
-        street: Street
+      - city: London, ST 00000
+        country: UK
+        street: Baker Street
         title: Address
     buttonClear: Clear
     buttonSend: Send message
     email:
-      - email: example@domain.com
+      - email: pkatircioglu.mfa2022@london.edu
         title: Email
     enable: yes
     phone:
