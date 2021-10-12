@@ -1,7 +1,7 @@
 baseURL: https://pinar-portfolio.netlify.app/
 languageCode: en-us
 title: Pinar
-theme: Pinar
+theme: forty
 googleAnalytics: ''
 disqusShortname: ''
 params:
