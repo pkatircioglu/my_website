@@ -35,7 +35,7 @@ params:
     text: Please visit [this page](/)
   favicon: favicon.ico
   footer:
-    copyright: Company Name
+    copyright: Pinar
     enable: yes
     quicklinks:
       - alt: HTML5 UP
@@ -54,9 +54,9 @@ params:
       - icon: fa-github
         label: GitHub
         url: https://www.github.com
-      - icon: fa-linkedin
-        label: LinkedIn
-        url: https://www.linkedin.com
+#      - icon: fa-linkedin
+#        label: LinkedIn
+#        url: https://www.linkedin.com
   image: ''
   name: Your name
   navigation:
