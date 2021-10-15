@@ -1,0 +1,75 @@
+---
+title: "Change of CPI & Components"
+date: '2021-09-30'
+description: Change of CPI & Components
+draft: no
+image: consumer.jpg
+keywords: ''
+slug: CPI_components
+categories:
+- ''
+- ''
+---
+
+
+
+<p>Using the relative importance of components in the Consumer Price Indexes: U.S. city average, December 2020 we chose a smaller subset of the components and only listed the major categories (Housing, Transportation, Food &amp; Beverages, Medical Care, Education and Communication, Recreation, and Apparel).</p>
+<p>We see that from 2000 to 2021, yearly CPI change for “all items” is positive in most of the years.In contrast, yearly change of CPI in “apparel” category is negative in most of the years which indicates an overall price decrease year by year. The most volatile component of CPIin terms of price is “transport”, indicating a relatively higher year on year changes compared to other categories.</p>
+<pre class="r"><code>url &lt;- &quot;https://fredaccount.stlouisfed.org/public/datalist/843&quot;
+
+library(rvest)
+
+tables &lt;- url  %&gt;% # Reading in data from site
+  read_html()  %&gt;% 
+  html_nodes(css =&quot;table&quot;)
+
+cpi &lt;- map(tables, . %&gt;% 
+             html_table(fill=TRUE)  %&gt;% 
+             janitor::clean_names())  # Ensuring names are in a useable format
+
+cpi_data &lt;- cpi[[2]] 
+
+references &lt;- as.vector(pull(cpi_data, series_id))    
+
+cpi_components &lt;- references  %&gt;% 
+  tidyquant::tq_get(get = &quot;economic.data&quot;, from =  &quot;1999-01-01&quot;)  %&gt;%
+  mutate(cpi_yoy_change = price/lag(price, 12) - 1)  %&gt;%  # Change calculation
+  na.omit(cpi_components)  # Get rid of any NA values
+
+# 1999 was chosen as the year from which to pull as the lag function reads from
+# 12 months prior, and so pulling from 2000 means you can only get calculable
+# results from 2001 January. The NA results for 1999 are then filtered out
+
+cpi_components_major &lt;- cpi_components %&gt;% 
+  filter((symbol == &quot;CPIAUCSL&quot;) | (symbol == &quot;CPIHOSSL&quot;) | 
+           (symbol == &quot;CPITRNSL&quot;) | (symbol == &quot;CPIFABSL&quot;) 
+         | (symbol == &quot;CPIAPPSL&quot;))  %&gt;% 
+  dplyr::mutate(titles = case_when(symbol == &quot;CPIAUCSL&quot; ~ &quot;All Items&quot;, 
+                               symbol == &quot;CPIHOSSL&quot; ~ &quot;Housing&quot;,
+                               symbol == &quot;CPITRNSL&quot; ~ &quot;Transport&quot;,
+                               symbol == &quot;CPIFABSL&quot; ~ &quot;Food and Beverages&quot;,
+                               symbol == &quot;CPIAPPSL&quot; ~ &quot;Apparel&quot;))
+ggplot(cpi_components_major, aes(x = date, y=cpi_yoy_change))+
+  #scale_x_continuous(breaks = seq(0, 54, by = 13)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  coord_cartesian(ylim = c(-0.5, 0.5)) +
+  
+  geom_point(size = 0.5, aes(color=ifelse(cpi_yoy_change&lt;0, &quot;red4&quot;, 
+                                          &quot;steelblue4&quot;)),
+             show.legend = FALSE) +
+  geom_smooth(color = &quot;gray&quot;) +
+
+  facet_wrap(~titles, nrow = 2) +
+  theme(legend.position = &quot;none&quot;) +
+  theme_minimal() +
+  labs (
+    title = &quot;Yearly Change of US CPI and its Major Components&quot;,
+    subtitle = &quot;YOY Change Being Positive or Negative,
+Jan 2000 to Aug 2021 &quot;,
+    x = &quot;&quot;, 
+    y = &quot;YoY % Change&quot;,
+    caption = &quot;Data from FRED
+https://fredaccount.stlouisfed.org/public/datalist/843&quot;,
+  ) +
+  NULL</code></pre>
+<p><img src="/blogs/CPI_components_files/figure-html/unnamed-chunk-1-1.png" width="648" style="display: block; margin: auto;" /></p>

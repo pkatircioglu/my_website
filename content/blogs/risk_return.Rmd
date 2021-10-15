@@ -43,7 +43,6 @@ library(lubridate) #to handle dates
 library(ggrepel)
 ```
 
-# Returns of financial stocks
 
 Before analyzing the risk & return of DIJA stocks, we change the format of the data to dataframe and generate a vector of strings with 30 DIJA tickers, SP500 ETF, and the VIX index.
 

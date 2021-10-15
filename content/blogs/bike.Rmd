@@ -1,0 +1,167 @@
+---
+categories:  
+- ""    
+- ""
+date: "2021-09-30"
+description: Excess Rentals in TFL Bike Sharing 
+draft: false
+image: bike.jpg 
+
+keywords: ""
+slug: bike 
+title: Excess Rentals in TFL Bike Sharing
+---
+  
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, include=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(here)
+library(skimr)
+library(janitor)
+library(httr)
+library(readxl)
+library(vroom)
+```
+
+
+We will analyze the TFL data on how many bikes were hired every single day. We can get the latest data by running the following:
+
+```{r}
+url <- "https://data.london.gov.uk/download/number-bicycle-hires/ac29363e-e0cb-47cc-a97a-e216d900a6b0/tfl-daily-cycle-hires.xlsx"
+
+# Download TFL data to temporary file
+httr::GET(url, write_disk(bike.temp <- tempfile(fileext = ".xlsx")))
+```
+
+```{r}
+# Use read_excel to read it as dataframe
+bike0 <- read_excel(bike.temp,
+                   sheet = "Data",
+                   range = cell_cols("A:B"))
+
+# change dates to get year, month, and week
+bike <- bike0 %>% 
+  clean_names() %>% 
+  rename (bikes_hired = number_of_bicycle_hires) %>% 
+  mutate (year = year(day),
+          month = lubridate::month(day, label = TRUE),
+          week = isoweek(day))
+```
+
+For both of the following graphs, we have calculated the expected number of rentals per week or month between 2016-2019 and then, see how each week/month of 2020-2021 compares to the expected rentals, using the calculation excess_rentals = actual_rentals - expected_rentals.
+
+The mean should be used to calculate the expected rentals per month.
+
+It is likely that the number of rentals on weekdays and weekends will vary by a lot , and the mean is able to take into account all values in the week. This gives a more accurate idea of the average number of rentals in the overall month. On the other hand, the median will only take the middle value in the data-set within the week. This is likely to be a weekday, since there are 5 weekdays in a week and 2 weekends. Median thus does not reflect the average rentals per month accurately.
+
+```{r}
+print.data.frame(head(bike))
+```
+
+```{r}
+updated_bike <- bike %>% 
+  filter (year >2015) %>% 
+  group_by(month, year) %>% 
+  summarise (actual_mean_rental = mean(bikes_hired))
+
+updated_bike_2016_2019 <- bike %>% 
+  filter (year >2015 & year< 2020) %>% 
+  group_by (month) %>% 
+  summarise (expected_rental = mean(bikes_hired)) #expected rentals per month
+
+final_bike <- left_join(updated_bike, updated_bike_2016_2019) %>% 
+  mutate (excess_rentals= actual_mean_rental - expected_rental,
+          up= ifelse(actual_mean_rental > expected_rental, actual_mean_rental, 
+                     expected_rental),
+          down= ifelse(actual_mean_rental < expected_rental, actual_mean_rental, 
+                       expected_rental))
+print.data.frame(head(final_bike))
+```
+
+```{r}
+ggplot(final_bike, aes(x=month, y= actual_mean_rental)) +
+  geom_line(aes(group=1)) + #actual values
+  geom_line(aes(y= expected_rental, group=1), size=0.8, color= "blue") + 
+  #expected values
+  facet_wrap(vars(year)) +
+  theme_bw()+
+  geom_ribbon(aes(ymin=expected_rental,ymax=up, group=1),fill="darkseagreen3",
+              alpha=0.4)+
+  geom_ribbon(aes(ymin=down,ymax=expected_rental, group=1),fill="indianred3",
+              alpha=0.4) +
+  labs(y = "Bike Rentals",
+       title= "Monthly changes in TFL bike rentals",
+       subtitle= "Change from monthly average shown in blue and calculated between 2016-2019")
+```
+
+```{r}
+bike_change <- bike %>% 
+  filter((year >= 2016 & year <= 2020) | (year == 2021 & week <53)) %>%
+  group_by(week,year) %>%
+  mutate(bikes_each_week = sum(bikes_hired)) %>% #sum up no.of bikes in a week
+  
+  group_by(week) %>% 
+  mutate(average_each_week = median(bikes_each_week), #median bikes in same week 
+         excess_rentals_percentage = 
+           (bikes_each_week - average_each_week)/average_each_week)
+  replace_na(list(
+    excess_rentals_percentage = 1
+  ))
+```
+
+```{r}
+print.data.frame(head(bike_change))
+```
+
+```{r}
+ggplot(bike_change, aes(x = week, y = excess_rentals_percentage))+
+  scale_x_continuous(breaks = seq(0, 53, by = 13)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  coord_cartesian(ylim = c(-1,1)) +
+  
+  geom_line(aes(y = excess_rentals_percentage)) +
+  
+  geom_rect(aes(xmin=13, xmax=27, ymin=-2, ymax=2), color="grey99", alpha=0.1) +
+  geom_rect(aes(xmin=39, xmax=53, ymin=-2, ymax=2), color="grey99", alpha=0.1) +
+  
+  geom_ribbon(aes(ymin=pmin(excess_rentals_percentage,0), ymax=0), 
+              fill="indianred3", alpha=0.5) +
+  geom_ribbon(aes(ymin=0, ymax=pmax(excess_rentals_percentage,0)), 
+              fill="darkseagreen3", alpha=0.5) +
+  
+  geom_rug(data = subset(bike_change, excess_rentals_percentage < 0 ), 
+           color="indianred3", sides="b") +
+  geom_rug(data = subset(bike_change, excess_rentals_percentage >= 0 ), 
+           color="darkseagreen3", sides="b") +
+
+  facet_wrap(~year, nrow = 2) +
+  theme(legend.position="none") +
+  theme_minimal() +
+  labs (
+    title = "Weekly changes in TfL bike rentals",
+    subtitle = "% change from weekly averages calculated between 2016-2019",
+    x = "week", 
+    y = "",
+    caption = "Source: TfL, London Data Store",
+  ) +
+  NULL 
+```

@@ -1,0 +1,149 @@
+---
+categories:  
+- ""    
+- ""
+date: "2021-09-30"
+description: Excess Rentals in TFL Bike Sharing 
+draft: false
+image: bike.jpg 
+
+keywords: ""
+slug: bike 
+title: Excess Rentals in TFL Bike Sharing
+---
+
+
+
+<p>We will analyze the TFL data on how many bikes were hired every single day. We can get the latest data by running the following:</p>
+<pre class="r"><code>url &lt;- &quot;https://data.london.gov.uk/download/number-bicycle-hires/ac29363e-e0cb-47cc-a97a-e216d900a6b0/tfl-daily-cycle-hires.xlsx&quot;
+
+# Download TFL data to temporary file
+httr::GET(url, write_disk(bike.temp &lt;- tempfile(fileext = &quot;.xlsx&quot;)))</code></pre>
+<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2021-09-23T12%3A52%3A20/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20211015%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20211015T233731Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=e964da029db33b3f128de7f107b3baa5733cbce04e2069b818446cc079a4aaad&amp;X-Amz-SignedHeaders=host]
+##   Date: 2021-10-15 23:37
+##   Status: 200
+##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+##   Size: 174 kB
+## &lt;ON DISK&gt;  /var/folders/5j/pf5gj24n2wz99hb9czsqr8m40000gn/T//RtmpjC7j40/file17277b44c5c5.xlsx</code></pre>
+<pre class="r"><code># Use read_excel to read it as dataframe
+bike0 &lt;- read_excel(bike.temp,
+                   sheet = &quot;Data&quot;,
+                   range = cell_cols(&quot;A:B&quot;))
+
+# change dates to get year, month, and week
+bike &lt;- bike0 %&gt;% 
+  clean_names() %&gt;% 
+  rename (bikes_hired = number_of_bicycle_hires) %&gt;% 
+  mutate (year = year(day),
+          month = lubridate::month(day, label = TRUE),
+          week = isoweek(day))</code></pre>
+<p>For both of the following graphs, we have calculated the expected number of rentals per week or month between 2016-2019 and then, see how each week/month of 2020-2021 compares to the expected rentals, using the calculation excess_rentals = actual_rentals - expected_rentals.</p>
+<p>The mean should be used to calculate the expected rentals per month.</p>
+<p>It is likely that the number of rentals on weekdays and weekends will vary by a lot , and the mean is able to take into account all values in the week. This gives a more accurate idea of the average number of rentals in the overall month. On the other hand, the median will only take the middle value in the data-set within the week. This is likely to be a weekday, since there are 5 weekdays in a week and 2 weekends. Median thus does not reflect the average rentals per month accurately.</p>
+<pre class="r"><code>print.data.frame(head(bike))</code></pre>
+<pre><code>##          day bikes_hired year month week
+## 1 2010-07-30        6897 2010   Jul   30
+## 2 2010-07-31        5564 2010   Jul   30
+## 3 2010-08-01        4303 2010   Aug   30
+## 4 2010-08-02        6642 2010   Aug   31
+## 5 2010-08-03        7966 2010   Aug   31
+## 6 2010-08-04        7893 2010   Aug   31</code></pre>
+<pre class="r"><code>updated_bike &lt;- bike %&gt;% 
+  filter (year &gt;2015) %&gt;% 
+  group_by(month, year) %&gt;% 
+  summarise (actual_mean_rental = mean(bikes_hired))
+
+updated_bike_2016_2019 &lt;- bike %&gt;% 
+  filter (year &gt;2015 &amp; year&lt; 2020) %&gt;% 
+  group_by (month) %&gt;% 
+  summarise (expected_rental = mean(bikes_hired)) #expected rentals per month
+
+final_bike &lt;- left_join(updated_bike, updated_bike_2016_2019) %&gt;% 
+  mutate (excess_rentals= actual_mean_rental - expected_rental,
+          up= ifelse(actual_mean_rental &gt; expected_rental, actual_mean_rental, 
+                     expected_rental),
+          down= ifelse(actual_mean_rental &lt; expected_rental, actual_mean_rental, 
+                       expected_rental))
+print.data.frame(head(final_bike))</code></pre>
+<pre><code>##   month year actual_mean_rental expected_rental excess_rentals    up  down
+## 1   Jan 2016              18914           20617        -1703.3 20617 18914
+## 2   Jan 2017              20596           20617          -20.6 20617 20596
+## 3   Jan 2018              20836           20617          218.5 20836 20617
+## 4   Jan 2019              22123           20617         1505.5 22123 20617
+## 5   Jan 2020              22893           20617         2275.6 22893 20617
+## 6   Jan 2021              13218           20617        -7399.0 20617 13218</code></pre>
+<pre class="r"><code>ggplot(final_bike, aes(x=month, y= actual_mean_rental)) +
+  geom_line(aes(group=1)) + #actual values
+  geom_line(aes(y= expected_rental, group=1), size=0.8, color= &quot;blue&quot;) + 
+  #expected values
+  facet_wrap(vars(year)) +
+  theme_bw()+
+  geom_ribbon(aes(ymin=expected_rental,ymax=up, group=1),fill=&quot;darkseagreen3&quot;,
+              alpha=0.4)+
+  geom_ribbon(aes(ymin=down,ymax=expected_rental, group=1),fill=&quot;indianred3&quot;,
+              alpha=0.4) +
+  labs(y = &quot;Bike Rentals&quot;,
+       title= &quot;Monthly changes in TFL bike rentals&quot;,
+       subtitle= &quot;Change from monthly average shown in blue and calculated between 2016-2019&quot;)</code></pre>
+<p><img src="/blogs/bike_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bike_change &lt;- bike %&gt;% 
+  filter((year &gt;= 2016 &amp; year &lt;= 2020) | (year == 2021 &amp; week &lt;53)) %&gt;%
+  group_by(week,year) %&gt;%
+  mutate(bikes_each_week = sum(bikes_hired)) %&gt;% #sum up no.of bikes in a week
+  
+  group_by(week) %&gt;% 
+  mutate(average_each_week = median(bikes_each_week), #median bikes in same week 
+         excess_rentals_percentage = 
+           (bikes_each_week - average_each_week)/average_each_week)
+  replace_na(list(
+    excess_rentals_percentage = 1
+  ))</code></pre>
+<pre><code>## $excess_rentals_percentage
+## [1] 1</code></pre>
+<pre class="r"><code>print.data.frame(head(bike_change))</code></pre>
+<pre><code>##          day bikes_hired year month week bikes_each_week average_each_week
+## 1 2016-01-01        9922 2016   Jan   53           22062             59380
+## 2 2016-01-02        7246 2016   Jan   53           22062             59380
+## 3 2016-01-03        4894 2016   Jan   53           22062             59380
+## 4 2016-01-04       20644 2016   Jan    1          132071            126680
+## 5 2016-01-05       22934 2016   Jan    1          132071            126680
+## 6 2016-01-06       23199 2016   Jan    1          132071            126680
+##   excess_rentals_percentage
+## 1                   -0.6285
+## 2                   -0.6285
+## 3                   -0.6285
+## 4                    0.0426
+## 5                    0.0426
+## 6                    0.0426</code></pre>
+<pre class="r"><code>ggplot(bike_change, aes(x = week, y = excess_rentals_percentage))+
+  scale_x_continuous(breaks = seq(0, 53, by = 13)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  coord_cartesian(ylim = c(-1,1)) +
+  
+  geom_line(aes(y = excess_rentals_percentage)) +
+  
+  geom_rect(aes(xmin=13, xmax=27, ymin=-2, ymax=2), color=&quot;grey99&quot;, alpha=0.1) +
+  geom_rect(aes(xmin=39, xmax=53, ymin=-2, ymax=2), color=&quot;grey99&quot;, alpha=0.1) +
+  
+  geom_ribbon(aes(ymin=pmin(excess_rentals_percentage,0), ymax=0), 
+              fill=&quot;indianred3&quot;, alpha=0.5) +
+  geom_ribbon(aes(ymin=0, ymax=pmax(excess_rentals_percentage,0)), 
+              fill=&quot;darkseagreen3&quot;, alpha=0.5) +
+  
+  geom_rug(data = subset(bike_change, excess_rentals_percentage &lt; 0 ), 
+           color=&quot;indianred3&quot;, sides=&quot;b&quot;) +
+  geom_rug(data = subset(bike_change, excess_rentals_percentage &gt;= 0 ), 
+           color=&quot;darkseagreen3&quot;, sides=&quot;b&quot;) +
+
+  facet_wrap(~year, nrow = 2) +
+  theme(legend.position=&quot;none&quot;) +
+  theme_minimal() +
+  labs (
+    title = &quot;Weekly changes in TfL bike rentals&quot;,
+    subtitle = &quot;% change from weekly averages calculated between 2016-2019&quot;,
+    x = &quot;week&quot;, 
+    y = &quot;&quot;,
+    caption = &quot;Source: TfL, London Data Store&quot;,
+  ) +
+  NULL </code></pre>
+<p><img src="/blogs/bike_files/figure-html/unnamed-chunk-8-1.png" width="648" style="display: block; margin: auto;" /></p>
