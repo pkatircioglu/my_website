@@ -62,18 +62,18 @@ params:
     button1:
       - name: Get Started
         url: blogs
-    button2:
-      - name: Log In
-        url: '#'
+#   button2:
+#      - name: Log In
+#        url: '#'
     links:
       - name: Home
         url: '#'
-      - name: Blogs
-        url: blogs
-      - name: Generic Blog
-        url: blogs/ipsum
-      - name: Elements
-        url: elements.html
+#      - name: Blogs
+#        url: blogs
+#     - name: Generic Blog
+#      url: blogs/ipsum
+#      - name: Elements
+#       url: elements.html
     menu: Menu
     subtitle: PORTFOLIO WEBSITE
     title: PINAR
@@ -108,9 +108,9 @@ params:
         subtitle: Analysis on Y-o-Y CPI Change with a breakdown of its components
         title: Change of CPI & Components
         url: blogs/CPI_components
-  two:
-    buttonText: Get Started
-    enable: yes
-    subtitle: "Press get started to explore more about me and my work!"
-    title: Learn more
-    url: blogs
+ # two:
+#    buttonText: Get Started
+#    enable: yes
+#    subtitle: "Press get started to explore more about me and my work!"
+#    title: Learn more
+#    url: blogs
