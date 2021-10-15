@@ -84,7 +84,7 @@ params:
         subtitle: A short biography
         title: About me
         url: blogs/aboutme
-        - image: Horse
+        - image: horse.jpg
         subtitle: Explore more about me 
         title: My Hobbies & Interests
         url: blogs/my_hobbies_and_interests
