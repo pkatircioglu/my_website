@@ -80,7 +80,7 @@ params:
   tiles:
     enable: yes
     showcase:
-      - image: lbs.jpg
+      - image: about.jpg
         subtitle: A short biography
         title: About me
         url: blogs/aboutme
@@ -90,8 +90,8 @@ params:
         url: blogs/risk_return
       - image: horse.jpg
         subtitle: Explore more about me
-        title: My Hobbies & Interestes
-        url: blogs/magna
+        title: My Hobbies & Interests
+        url: blogs/hobbies_interests
       - image: pic04.jpg
         subtitle: Nisl Sed Aliquam
         title: Ipsum
