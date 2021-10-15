@@ -3,18 +3,15 @@ categories:
 - ""    #the front matter should be like the one found in, e.g., blog2.md. It cannot be like the normal Rmd we used
 - ""
 date: "2021-09-30"
-description: Risk-Return of DJIA stocks # the title that will show up once someone gets to this page
+description: Risk & Return of DJIA stocks # the title that will show up once someone gets to this page
 draft: false
-image: spices.jpg # save picture in \static\img\blogs. Acceptable formats= jpg, jpeg, or png . Your iPhone pics wont work
+image: finance.jpg # save picture in \static\img\blogs. Acceptable formats= jpg, jpeg, or png . Your iPhone pics wont work
 
 keywords: ""
 slug: risk_return # slug is the shorthand URL address... no spaces plz
-title: Risk-Return of DJIA stocks
+title: Risk & Return of DJIA stocks
 ---
   
-
-
-
 ```{r, setup, echo=FALSE}
 knitr::opts_chunk$set(
   message = FALSE, 
@@ -46,69 +43,49 @@ library(lubridate) #to handle dates
 library(ggrepel)
 ```
 
-
 # Returns of financial stocks
 
-Next, let's choose the [Dow Jones Industrial Average (DJIA)](https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average) stocks and their ticker symbols and download some data. Besides the thirty stocks that make up the DJIA, we will also add `SPY` which is an SP500 ETF (Exchange Traded Fund).
-
-We will use the `rvest` package to scrape the Wikipedia page for the constituents of DJIA
+Before analyzing the risk & return of DIJA stocks, we change the format of the data to dataframe and generate a vector of strings with 30 DIJA tickers, SP500 ETF, and the VIX index.
 
 ```{r, tickers_from_wikipedia}
 
 djia_url <- "https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average"
 
-
-#get tables that exist on URL
 tables <- djia_url %>% 
   read_html() %>% 
   html_nodes(css="table")
 
-
-# parse HTML tables into a dataframe called djia. 
-# Use purr::map() to create a list of all tables in URL
 djia <- map(tables, . %>% 
                html_table(fill=TRUE)%>% 
                clean_names())
 
-
-# constituents
-table1 <- djia[[2]] %>% # the second table on the page contains the ticker symbols
+table1 <- djia[[2]] %>%
   mutate(date_added = ymd(date_added),
-         
-         # if a stock is listed on NYSE, its symbol is, e.g., NYSE: MMM
-         # We will get prices from yahoo finance which requires just the ticker
-         
-         # if symbol contains "NYSE*", the * being a wildcard
-         # then we jsut drop the first 6 characters in that string
          ticker = ifelse(str_detect(symbol, "NYSE*"),
                           str_sub(symbol,7,11),
                           symbol)
          )
-
-# we need a vector of strings with just the 30 tickers + SPY  + VIX
 tickers <- table1 %>% 
   select(ticker) %>% 
-  pull() %>% # pull() gets them as a sting of characters
-  c("SPY", "^VIX") # and lets us add SPY, the SP500 ETF, and the VIX index
+  pull() %>%
+  c("SPY", "^VIX")
 
+tickers
 ```
 
-
-
+There are 167,407 entries in total. For each ticker, date, open & close, high & low prices as well as volume and adjusted value is given.
 
 ```{r get_price_data, message=FALSE, warning=FALSE, cache=TRUE}
-# Notice the cache=TRUE argument in the chunk options. Because getting data is time consuming, # cache=TRUE means that once it downloads data, the chunk will not run again next time you knit your Rmd
 
 myStocks <- tickers %>% 
   tq_get(get  = "stock.prices",
          from = "2000-01-01") %>%
   group_by(symbol) 
 
-glimpse(myStocks) # examine the structure of the resulting data frame
+glimpse(myStocks) 
 ```
 
-Financial performance analysis depend on returns; If I buy a stock today for 100 and I sell it tomorrow for 101.75, my one-day return, assuming no transaction costs, is 1.75%. So given the adjusted closing prices, our first step is to calculate daily and monthly returns.
-
+Daily and monthly returns are calculated below.
 
 ```{r calculate_returns, message=FALSE, warning=FALSE, cache=TRUE}
 #calculate daily returns
@@ -119,6 +96,7 @@ myStocks_returns_daily <- myStocks %>%
                type       = "log",
                col_rename = "daily_returns",
                cols = c(nested.col))  
+head(myStocks_returns_daily)
 
 #calculate monthly  returns
 myStocks_returns_monthly <- myStocks %>%
@@ -128,7 +106,11 @@ myStocks_returns_monthly <- myStocks %>%
                type       = "arithmetic",
                col_rename = "monthly_returns",
                cols = c(nested.col)) 
+head(myStocks_returns_monthly)
 ```
+
+Monthly returns for each of the 30 DIJA stocks since 2010 are visualized below. 
+As shown in the chart and in the summary statistics, the riskiest variable is the VIX index with a standard deviation of 0.23. Following that, the riskiest stock is Apple with a standard deviation of 0.12. The least risky stock is SPY with a standard deviation of 0.043.
 
 ```{r}
 #visualise monthly returns since 2010, for each of the 30 DJIA stocks
@@ -149,9 +131,12 @@ myStocks_returns_monthly %>%
     y = "" )+
   NULL
 
-
+myStocks_returns_monthly %>% 
+  group_by(symbol) %>% 
+  summarise(std_dev= sd(monthly_returns)) %>% 
+  arrange (desc(std_dev))
 ```
-
+Risk & Return trade-off between 2017-2021 is visualized for each ticker. As shown in the graphs, SPY outperforms majority of the stocks by having a lower risk for a similar/higher return. Even in 2020 which was a very unpredictable year for many companies, return/risk measure of the stock was around 30% which was higher than many companies.
 
 ```{r, risk_return, echo=FALSE}
 
@@ -182,7 +167,7 @@ by_year_monthly %>%
   theme(legend.position = "none")+
   scale_y_continuous(labels = scales::percent) +
   labs(
-    title = "Risk-Return tradeoff for DJIA stocks",
+    title = "Risk & Return Tradeoff for DJIA stocks",
     subtitle = "Monthly returns, Jan 2017- now",
     x = "Risk (SD of monthly returns)",
     y = "Return (Mean)" )+

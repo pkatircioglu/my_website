@@ -90,15 +90,14 @@ params:
         title: My Hobbies & Interests
         url: blogs/hobbies_interests
         
-      - image: pic02.jpg
-        subtitle: an analysis...
-        title: Rısk Return
+      - image: finance_stock.jpg
+        subtitle: An analysis of DIJA Stocks
+        title: Risk & Return Analysis 
         url: blogs/risk_return
         
-      - image: pic04.jpg
-        subtitle: Nisl Sed Aliquam
-        title: Ipsum
-        url: blogs/ipsum
+      - image: climate_main.jpg
+        title: Climate Change & Temperature Anomalies
+        url: blogs/climate_change
         
       - image: pic05.jpg
         subtitle: Ipsum Dolor Sit Amet
