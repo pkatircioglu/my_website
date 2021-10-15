@@ -10,8 +10,8 @@ description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis mag
 draft: false
 image: pic07.jpg
 keywords: ""
-slug: aliquam
-title: Aliquam
+slug: aboutme
+title: ABout Me 
 ---
 
 thıs ıs the textg of my biıogrphgy
