@@ -84,15 +84,11 @@ params:
         subtitle: A short biography
         title: About me
         url: blogs/aboutme
-        - image: horse.jpg
-        subtitle: Explore more about me 
-        title: My Hobbies & Interests
-        url: blogs/my_hobbies_and_interests
       - image: pic02.jpg
         subtitle: an analysis...
         title: Rısk Return
         url: blogs/risk_return
-      - image: pic03.jpg
+      - image: horse.jpg
         subtitle: Lorem Etiam Nullam
         title: Magna
         url: blogs/magna
