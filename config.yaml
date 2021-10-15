@@ -8,15 +8,14 @@ params:
   banner:
     buttonText: Get Started
     subtitle: |-
-      A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP
-      AND RELEASED UNDER THE CREATIVE COMMONS.
+      Are you excited to learn about me and my data analytics work?
     title: Hi, my name is Pinar
   blog: {}
   contact:
     address:
-      - city: London, ST 00000
+      - city: London, NW1 4SA
         country: UK
-        street: Baker Street
+        street: Regent's Park
         title: Address
     buttonClear: Clear
     buttonSend: Send message
@@ -25,8 +24,8 @@ params:
         title: Email
     enable: yes
     phone:
-      - phone: (000) 000-0000 x1234
-        title: Phone
+      - phone: +44 737 9255449
+        title: Contact Phone
   custom_css: []
   custom_js: []
   description: Your description
@@ -76,8 +75,8 @@ params:
       - name: Elements
         url: elements.html
     menu: Menu
-    subtitle: By HTML5 Up
-    title: Forty
+    subtitle: PORTFOLIO WEBSITE
+    title: PINAR
   tiles:
     enable: yes
     showcase:
@@ -85,6 +84,10 @@ params:
         subtitle: A short biography
         title: About me
         url: blogs/aboutme
+        - image: Horse
+        subtitle: Explore more about me 
+        title: My Hobbies & Interests
+        url: blogs/my_hobbies_and_interests
       - image: pic02.jpg
         subtitle: an analysis...
         title: Rısk Return
