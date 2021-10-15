@@ -106,7 +106,7 @@ myStocks_returns_monthly <- myStocks %>%
                type       = "arithmetic",
                col_rename = "monthly_returns",
                cols = c(nested.col)) 
-head(myStocks_returns_monthly)
+print.data.frame(head(myStocks_returns_monthly))
 ```
 
 Monthly returns for each of the 30 DIJA stocks since 2010 are visualized below. 

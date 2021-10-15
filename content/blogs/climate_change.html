@@ -28,30 +28,26 @@ categories:
 <pre class="r"><code>weather_update &lt;- weather %&gt;% 
   select(1:13)
 
-head(weather_update)</code></pre>
-<pre><code>## # A tibble: 6 × 13
-##    Year   Jan   Feb   Mar   Apr   May   Jun   Jul   Aug   Sep   Oct   Nov   Dec
-##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1  1880 -0.35 -0.51 -0.23 -0.3  -0.06 -0.16 -0.18 -0.26 -0.23 -0.32 -0.43 -0.4 
-## 2  1881 -0.3  -0.21 -0.03  0.01  0.04 -0.32  0.08 -0.04 -0.26 -0.43 -0.36 -0.22
-## 3  1882  0.26  0.21  0.02 -0.32 -0.24 -0.3  -0.28 -0.15 -0.24 -0.53 -0.33 -0.69
-## 4  1883 -0.58 -0.66 -0.16 -0.3  -0.25 -0.11 -0.05 -0.22 -0.34 -0.16 -0.44 -0.15
-## 5  1884 -0.16 -0.11 -0.64 -0.59 -0.36 -0.41 -0.44 -0.51 -0.44 -0.44 -0.57 -0.47
-## 6  1885 -1.01 -0.45 -0.23 -0.48 -0.59 -0.44 -0.34 -0.41 -0.4  -0.37 -0.38 -0.11</code></pre>
+print.data.frame(head(weather_update))</code></pre>
+<pre><code>##   Year   Jan   Feb   Mar   Apr   May   Jun   Jul   Aug   Sep   Oct   Nov   Dec
+## 1 1880 -0.35 -0.51 -0.23 -0.30 -0.06 -0.16 -0.18 -0.26 -0.23 -0.32 -0.43 -0.40
+## 2 1881 -0.30 -0.21 -0.03  0.01  0.04 -0.32  0.08 -0.04 -0.26 -0.43 -0.36 -0.22
+## 3 1882  0.26  0.21  0.02 -0.32 -0.24 -0.30 -0.28 -0.15 -0.24 -0.53 -0.33 -0.69
+## 4 1883 -0.58 -0.66 -0.16 -0.30 -0.25 -0.11 -0.05 -0.22 -0.34 -0.16 -0.44 -0.15
+## 5 1884 -0.16 -0.11 -0.64 -0.59 -0.36 -0.41 -0.44 -0.51 -0.44 -0.44 -0.57 -0.47
+## 6 1885 -1.01 -0.45 -0.23 -0.48 -0.59 -0.44 -0.34 -0.41 -0.40 -0.37 -0.38 -0.11</code></pre>
 <pre class="r"><code>tidyweather &lt;- weather_update %&gt;% 
   pivot_longer(cols=2:13, 
                names_to=&quot;Month&quot;, 
                values_to = &quot;delta&quot;)
-head(tidyweather)</code></pre>
-<pre><code>## # A tibble: 6 × 3
-##    Year Month delta
-##   &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
-## 1  1880 Jan   -0.35
-## 2  1880 Feb   -0.51
-## 3  1880 Mar   -0.23
-## 4  1880 Apr   -0.3 
-## 5  1880 May   -0.06
-## 6  1880 Jun   -0.16</code></pre>
+print.data.frame(head(tidyweather))</code></pre>
+<pre><code>##   Year Month delta
+## 1 1880   Jan -0.35
+## 2 1880   Feb -0.51
+## 3 1880   Mar -0.23
+## 4 1880   Apr -0.30
+## 5 1880   May -0.06
+## 6 1880   Jun -0.16</code></pre>
 <p>Thus the dataframe now has three variables, for:</p>
 <ol style="list-style-type: decimal">
 <li>year,</li>
@@ -100,16 +96,14 @@ ggplot(tidyweather, aes(x=date, y = delta))+
     TRUE ~ &quot;2011-present&quot;
   ))
 
-head(comparison)</code></pre>
-<pre><code>## # A tibble: 6 × 7
-##    Year Month delta date       month  year interval 
-##   &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;date&gt;     &lt;ord&gt; &lt;dbl&gt; &lt;chr&gt;    
-## 1  1881 Jan   -0.3  1881-01-01 Jan    1881 1881-1920
-## 2  1881 Feb   -0.21 1881-02-01 Feb    1881 1881-1920
-## 3  1881 Mar   -0.03 1881-03-01 Mar    1881 1881-1920
-## 4  1881 Apr    0.01 1881-04-01 Apr    1881 1881-1920
-## 5  1881 May    0.04 1881-05-01 May    1881 1881-1920
-## 6  1881 Jun   -0.32 1881-06-01 Jun    1881 1881-1920</code></pre>
+print.data.frame(head(comparison))</code></pre>
+<pre><code>##   Year Month delta       date month year  interval
+## 1 1881   Jan -0.30 1881-01-01   Jan 1881 1881-1920
+## 2 1881   Feb -0.21 1881-02-01   Feb 1881 1881-1920
+## 3 1881   Mar -0.03 1881-03-01   Mar 1881 1881-1920
+## 4 1881   Apr  0.01 1881-04-01   Apr 1881 1881-1920
+## 5 1881   May  0.04 1881-05-01   May 1881 1881-1920
+## 6 1881   Jun -0.32 1881-06-01   Jun 1881 1881-1920</code></pre>
 <p>We can now employ this to create a density plot:</p>
 <pre class="r"><code>ggplot(comparison, aes(x=delta, fill=interval))+
   geom_density(alpha=0.2) +   #density plot with tranparency set to 20%
@@ -128,16 +122,14 @@ average_annual_anomaly &lt;- tidyweather %&gt;%
   # use `na.rm=TRUE` to eliminate NA (not available) values 
   summarise(annual_average_delta= mean(delta, na.rm=TRUE )) 
 
-head(average_annual_anomaly)</code></pre>
-<pre><code>## # A tibble: 6 × 2
-##    Year annual_average_delta
-##   &lt;dbl&gt;                &lt;dbl&gt;
-## 1  1880               -0.286
-## 2  1881               -0.17 
-## 3  1882               -0.216
-## 4  1883               -0.285
-## 5  1884               -0.428
-## 6  1885               -0.434</code></pre>
+print.data.frame(head(average_annual_anomaly))</code></pre>
+<pre><code>##   Year annual_average_delta
+## 1 1880               -0.286
+## 2 1881               -0.170
+## 3 1882               -0.216
+## 4 1883               -0.285
+## 5 1884               -0.428
+## 6 1885               -0.434</code></pre>
 <pre class="r"><code>#plotting the data:
 ggplot(average_annual_anomaly, aes(x=Year, y= annual_average_delta))+
   geom_point()+
@@ -169,10 +161,9 @@ ggplot(average_annual_anomaly, aes(x=Year, y= annual_average_delta))+
             delta_high = mean_delta + margin_of_error)
 
   
-formula_ci</code></pre>
-<pre><code>## # A tibble: 1 × 9
-##   mean_delta median_delta sd_delta count t_critical se_delta margin_of_error
-##        &lt;dbl&gt;        &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt;      &lt;dbl&gt;    &lt;dbl&gt;           &lt;dbl&gt;
+print.data.frame(formula_ci)</code></pre>
+<pre><code>##   mean_delta median_delta sd_delta count t_critical se_delta margin_of_error
 ## 1       1.06         1.04    0.274   132       1.98   0.0239          0.0472
-## # … with 2 more variables: delta_low &lt;dbl&gt;, delta_high &lt;dbl&gt;</code></pre>
+##   delta_low delta_high
+## 1      1.01       1.11</code></pre>
 <p>The data is showing us that the average annual delta in temperature since 2011-present is 1.059609. We know this as we took the original dataframe and filtered for the interval between 2011-present. We then used the summarize function to get different statistics such as mean, median, etc.</p>

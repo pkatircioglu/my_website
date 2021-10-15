@@ -63,7 +63,7 @@ The two objectives in this section are to:
 weather_update <- weather %>% 
   select(1:13)
 
-head(weather_update)
+print.data.frame(head(weather_update))
 ```
 
 ```{r}
@@ -71,7 +71,7 @@ tidyweather <- weather_update %>%
   pivot_longer(cols=2:13, 
                names_to="Month", 
                values_to = "delta")
-head(tidyweather)
+print.data.frame(head(tidyweather))
 ```
 
 Thus the dataframe now has three variables, for:
@@ -122,7 +122,7 @@ comparison <- tidyweather %>%
     TRUE ~ "2011-present"
   ))
 
-head(comparison)
+print.data.frame(head(comparison))
 ```
 We can now employ this to create a density plot:
 
@@ -147,7 +147,7 @@ average_annual_anomaly <- tidyweather %>%
   # use `na.rm=TRUE` to eliminate NA (not available) values 
   summarise(annual_average_delta= mean(delta, na.rm=TRUE )) 
 
-head(average_annual_anomaly)
+print.data.frame(head(average_annual_anomaly))
 ```
 
 ```{r}
@@ -187,7 +187,7 @@ formula_ci <- comparison %>%
             delta_high = mean_delta + margin_of_error)
 
   
-formula_ci
+print.data.frame(formula_ci)
 ```
 
 The data is showing us that the average annual delta in temperature since 2011-present is 1.059609. We know this as we took the original dataframe and filtered for the interval between 2011-present. We then used the summarize function to get different statistics such as mean, median, etc. 
