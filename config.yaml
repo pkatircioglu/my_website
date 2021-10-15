@@ -84,22 +84,27 @@ params:
         subtitle: A short biography
         title: About me
         url: blogs/aboutme
-      - image: pic02.jpg
-        subtitle: an analysis...
-        title: Rısk Return
-        url: blogs/risk_return
+        
       - image: horse.jpg
         subtitle: Explore more about me
         title: My Hobbies & Interests
         url: blogs/hobbies_interests
+        
+      - image: pic02.jpg
+        subtitle: an analysis...
+        title: Rısk Return
+        url: blogs/risk_return
+        
       - image: pic04.jpg
         subtitle: Nisl Sed Aliquam
         title: Ipsum
         url: blogs/ipsum
+        
       - image: pic05.jpg
         subtitle: Ipsum Dolor Sit Amet
         title: Consequat
         url: blogs/ipsum
+        
       - image: pic06.jpg
         subtitle: Feugiat Amet Tempus
         title: Etiam
