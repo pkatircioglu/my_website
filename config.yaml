@@ -9,7 +9,7 @@ params:
     buttonText: Get Started
     subtitle: |-
       Are you excited to learn about me and my data analytics work?
-    title: Hi, my name is Pinar
+    title: Hi, my name is Pinar!
   blog: {}
   contact:
     address:
@@ -89,8 +89,8 @@ params:
         title: Rısk Return
         url: blogs/risk_return
       - image: horse.jpg
-        subtitle: Lorem Etiam Nullam
-        title: Magna
+        subtitle: Explore more about me
+        title: My Hobbies & Interestes
         url: blogs/magna
       - image: pic04.jpg
         subtitle: Nisl Sed Aliquam
@@ -107,11 +107,6 @@ params:
   two:
     buttonText: Get Started
     enable: yes
-    subtitle: "Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero.
-      \n    Mauris aliquet magna magna sed nunc rhoncus pharetra. \n    Pellentesque
-      condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia
-      pellentesque lorem ipsum dolor. \n    Nullam et orci eu lorem consequat tincidunt.
-      Vivamus et sagittis libero.\n    Mauris aliquet magna magna sed nunc rhoncus
-      amet pharetra et feugiat tempus."
-    title: Massa libero
+    subtitle: "Press get started to explore more about me and my work!"
+    title: Learn more
     url: blogs
